@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ml-stack-pytorch"
-version = "0.1.0"
+version = "0.2.0"
 description = "Composable PyTorch ML stack with CUDA 12.1 - install only what you need"
 authors = ["ML Frameworks Contributors cgpadwick@gmail.com"]
 readme = "README.md"
