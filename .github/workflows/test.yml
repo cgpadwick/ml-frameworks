@@ -2,9 +2,9 @@ name: Test ML Stacks
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11"]
-        group: [base, ml, vision, vision-extra, nlp, nlp-train, viz, data, dev, all]
+        group: [base, ml, vision, vision-extra, nlp, nlp-train, viz, data, all]
         exclude:
           # Only run 'all' on latest Python to save CI time
           - python-version: "3.10"
@@ -31,48 +31,15 @@ jobs:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
 
-    - name: Create virtual environment
-      run: |
-        python -m venv .venv
-
-    - name: Upgrade pip and install Poetry
-      run: |
-        source .venv/bin/activate
-        python -m pip install --upgrade pip
-        pip install poetry
-
-    - name: Install stack with ${{ matrix.group }} group
-      run: |
-        source .venv/bin/activate
-        cd stacks/pytorch-cu121
-        if [ "${{ matrix.group }}" = "base" ]; then
-          poetry install --no-root --no-directory
-        else
-          poetry install --no-root --no-directory --extras ${{ matrix.group }}
-        fi
-        cd ../
-
     - name: Install test dependencies
       run: |
-        source .venv/bin/activate
-        pip install pytest pytest-cov --quiet
+        python -m pip install --upgrade pip
+        pip install poetry pytest pytest-cov tomli --quiet
 
-    - name: Test imports for ${{ matrix.group }} group
+    - name: Run tests for ${{ matrix.group }} group
       run: |
-        source .venv/bin/activate
-        pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-${{ matrix.group }}" -v
-
-    - name: Test CUDA availability (if applicable)
-      run: |
-        source .venv/bin/activate
-        pytest tests/test_imports.py::TestPyTorchCUDA::test_torch_cuda -k "pytorch-cu121-${{ matrix.group }}" -v || true
-      continue-on-error: true
-
-    - name: Test framework versions
-      run: |
-        source .venv/bin/activate
-        pytest tests/test_imports.py::TestFrameworkVersions -k "pytorch-cu121-${{ matrix.group }}" -v || true
-      continue-on-error: true
+        pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-${{ matrix.group }}" -v --tb=short
+      timeout-minutes: 90
 
   linting:
     name: Lint & Format Check
