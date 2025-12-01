@@ -22,12 +22,10 @@ Core machine learning:
 Basic computer vision:
 - OpenCV, OpenCV contrib
 - scikit-image, Pillow
-- albumentations, imgaug
+- albumentations
 
 ### Vision-Extra
 Advanced CV frameworks:
-- Detectron2
-- MMDetection, MMCV
 - YOLOv8 (ultralytics)
 - timm (vision transformers)
 
@@ -43,14 +41,12 @@ NLP training utilities:
 - TRL (Transformer Reinforcement Learning)
 - bitsandbytes (quantization)
 - DeepSpeed
-- Flash-Attention
 
 ### Viz
 Visualization & dashboards:
 - matplotlib, seaborn, plotly, bokeh
 - Streamlit, Dash, Gradio
 - Jupyter, IPython
-- TensorBoard, Weights & Biases
 
 ### Data
 Data processing & ETL:
@@ -58,38 +54,29 @@ Data processing & ETL:
 - PyArrow
 - scikit-learn
 
-### Dev
-Developer tools:
-- pytest, pytest-cov
-- black, ruff, mypy
-- pre-commit
-
 ## Installation
 
-### With UV (recommended)
+### With Poetry (recommended)
 ```bash
-uv venv
+# Create and activate virtual environment
+python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
+# Install Poetry
+pip install poetry
+
 # Install base only
-uv pip install -e .
+poetry install
 
 # Install base + specific groups
-uv pip install -e .[ml,vision]
-uv pip install -e .[nlp,viz]
+poetry install -E ml,vision
+poetry install -E nlp,viz
 
 # Install all
-uv pip install -e .[all]
+poetry install -E all
 ```
 
-### With pip
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install with groups
-pip install -e .[ml,vision]
-```
+Poetry automatically uses the CUDA 12.1 PyTorch index configured in `pyproject.toml`.
 
 ## Usage Examples
 
@@ -155,30 +142,28 @@ pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-ml
 
 ### Beginner (10GB)
 ```bash
-uv pip install -e .[ml,vision,viz]
+poetry install -E ml,vision,viz
 ```
 
 ### LLM Development (30GB)
 ```bash
-uv pip install -e .[ml,nlp,nlp-train,viz]
+poetry install -E ml,nlp,nlp-train,viz
 ```
 
 ### Computer Vision (25GB)
 ```bash
-uv pip install -e .[ml,vision,vision-extra,viz]
+poetry install -E ml,vision,vision-extra,viz
 ```
 
 ### Full Stack (50GB)
 ```bash
-uv pip install -e .[all]
+poetry install -E all
 ```
 
 ## Dependency Notes
 
 - **numpy** capped at <2.0.0 due to widespread compatibility issues
-- **mmcv** capped at <2.2.0 to ensure mmdet compatibility
-- **flash-attn** requires CUDA (skipped on CPU-only systems)
-- **detectron2** may need special build on some systems
+- All PyTorch packages pinned to compatible versions (torch 2.3.1, torchvision 0.18.1, torchaudio 2.3.1)
 
 ## Version Control
 
