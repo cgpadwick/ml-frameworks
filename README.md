@@ -1,6 +1,6 @@
 # ML Frameworks
 
-[![Tests](https://github.com/yourusername/ml-frameworks/workflows/Test%20ML%20Stacks/badge.svg)](https://github.com/yourusername/ml-frameworks/actions)
+[![Tests](https://github.com/cgpadwick/ml-frameworks/workflows/Test%20ML%20Stacks/badge.svg)](https://github.com/cgpadwick/ml-frameworks/actions)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -22,71 +22,69 @@ Planned:
 
 ## Quick Start
 
-### Install UV (Recommended)
-
-UV is significantly faster than pip and poetry:
+### Install a Stack with Poetry
 
 **macOS/Linux:**
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-**Windows:**
-```bash
-powershell -ExecutionPolicy BypassUser -c "irm https://astral.sh/uv/install.ps1 | iex"
-```
-
-### Install a Stack
-
-**With Poetry (Recommended):**
-```bash
-# Create virtual environment
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate
 
 # Install Poetry
 pip install poetry
 
-# Install a stack from its directory (with specific groups)
+# Install stack with desired groups
 cd stacks/pytorch-cu121
-poetry install --extras ml,vision        # Install base + ml + vision groups
-poetry install --extras all              # Install all groups
-poetry install                           # Install base only
+poetry install -E ml,vision        # base + ml + vision groups
+poetry install -E all              # all groups
+poetry install                     # base only
 ```
 
-**Or with pip + index URL (legacy):**
+**Windows:**
 ```bash
-python -m venv venv
-source venv/bin/activate
-cd stacks/pytorch-cu121
-pip install -e . --index-url https://download.pytorch.org/whl/cu121
+python -m venv .venv
+.venv\Scripts\activate
+
+pip install poetry
+
+cd stacks\pytorch-cu121
+poetry install -E ml,vision
 ```
+
+### Why Poetry?
+
+Poetry reads the CUDA 12.1 PyTorch index configuration from `pyproject.toml` automatically. The lock file (`poetry.lock`) ensures reproducible installs across all environments.
 
 ## Testing
 
-Each stack is tested independently in isolated environments to verify compatibility.
+Tests create fresh virtual environments for each stack and dependency group to verify all packages install and import correctly.
 
-Run tests:
+**Run all tests:**
 ```bash
-# From root directory
-cd stacks/pytorch-cu121
-poetry install --extras all  # Install all dependencies for testing
-cd ../..
-poetry run pytest tests -v
-
-# Or test specific group
-cd stacks/pytorch-cu121
-poetry install --extras ml
-cd ../..
-poetry run pytest tests -k "pytorch-cu121-ml" -v
+pytest tests/test_imports.py -v
 ```
 
-Tests will:
-1. Build a fresh venv for each discovered stack
-2. Install that stack's dependencies with appropriate CUDA version (via Poetry sources)
-3. Verify every package imports successfully
-4. Check CUDA availability (PyTorch stacks)
-5. Validate major framework versions
+**Run tests for specific group:**
+```bash
+pytest tests/test_imports.py -k "pytorch-cu121-ml" -v
+```
+
+**Run specific test class:**
+```bash
+pytest tests/test_imports.py::TestImports -v
+```
+
+### What Tests Do
+
+For each dependency group:
+1. Create a fresh Python 3.10 virtual environment
+2. Install Poetry into the venv
+3. Run `poetry install -E {group}` to install that group's dependencies
+4. Verify every package imports successfully
+5. Test CUDA functionality (if torch is installed)
+6. Validate major framework versions (torch, transformers, etc.)
+
+**Note:** Tests are slow because each group gets its own fresh venv and full Poetry installation. Plan for 2-5 minutes per group depending on dependencies.
 
 ## Project Structure
 
@@ -111,26 +109,29 @@ ml-frameworks/
 
 ## pytorch-cu121 Stack
 
-A modular PyTorch stack with 9 optional dependency groups:
+A modular PyTorch stack with 9 optional dependency groups. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
-| **base** | Core data science | numpy, pandas, scipy |
-| **ml** | ML training | PyTorch, Lightning, ONNX, Triton |
-| **vision** | Basic CV | OpenCV, Pillow, albumentations |
-| **vision-extra** | Advanced CV | YOLOv8, timm, MMDetection, Detectron2 |
-| **nlp** | NLP tasks | transformers, datasets, PEFT |
-| **nlp-train** | NLP training | TRL, bitsandbytes, DeepSpeed, flash-attn |
+| **base** | Core data science | numpy, pandas, scipy, pydantic |
+| **ml** | ML training | PyTorch, Lightning, ONNX, Triton, Optuna |
+| **vision** | Basic CV | OpenCV, Pillow, albumentations, scikit-image |
+| **vision-extra** | Advanced CV | YOLOv8, timm, MMDetection |
+| **nlp** | NLP tasks | transformers, datasets, PEFT, accelerate |
+| **nlp-train** | NLP training | TRL, bitsandbytes, DeepSpeed |
 | **viz** | Visualization | matplotlib, plotly, streamlit, jupyter |
 | **data** | Data processing | Polars, Dask, PyArrow, scikit-learn |
-| **dev** | Developer tools | pytest, black, ruff, mypy |
+| **all** | Everything | All of the above |
 
-Install only what you need:
+### Installation Examples
+
 ```bash
-uv pip install -e stacks/pytorch-cu121              # base only
-uv pip install -e stacks/pytorch-cu121[ml]          # base + ml
-uv pip install -e stacks/pytorch-cu121[ml,vision]   # base + ml + vision
-uv pip install -e stacks/pytorch-cu121[all]         # everything
+cd stacks/pytorch-cu121
+
+poetry install                    # base only
+poetry install -E ml              # base + ml
+poetry install -E ml,vision       # base + ml + vision
+poetry install -E all             # everything
 ```
 
 Each group is independently tested for compatibility!
@@ -164,25 +165,31 @@ To work on the test infrastructure:
 
 ```bash
 cd /path/to/ml-frameworks
-uv venv
-source .venv/bin/activate
-uv pip install -e .
-pytest -v
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install pytest tomli   # tomli for Python 3.10 compatibility
+pytest tests/test_imports.py -v
 ```
 
 ## CI/CD & Testing
 
-Every push runs automated tests across all dependency groups:
+Every push runs automated tests across all dependency groups. Tests create fresh environments for each group to ensure isolation and reproducibility.
 
-- **18 parallel jobs** (Python 3.10, 3.11 × 9 groups)
-- **80 import tests** validating package compatibility
-- **Framework version checks** for major libraries
-- **Linting** with black and ruff
-- **~30-45 minutes** total (optimized with pip caching)
+**Test Coverage:**
+- **9 dependency groups** independently tested (base, ml, vision, vision-extra, nlp, nlp-train, viz, data, all)
+- **Package imports** verified for all dependencies
+- **Framework versions** validated (torch, transformers, lightning, etc.)
+- **CUDA functionality** tested (with graceful skip on CPU-only systems)
+- **Linting & formatting** with black and ruff
+
+**Execution:**
+- Each group gets a fresh venv and Poetry installation
+- Estimated ~2-5 minutes per group depending on dependencies
+- Total runtime: ~20-45 minutes for full suite
 
 Tests run on every push and PR. Failures block merge.
 
-See [.github/workflows/README.md](.github/workflows/README.md) for details.
+See [.github/workflows/README.md](.github/workflows/README.md) for workflow configuration details.
 
 ## License
 
