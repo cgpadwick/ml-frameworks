@@ -1,0 +1,94 @@
+name: Build and Release Stack Wheels
+
+on:
+  push:
+    tags:
+      - '*-v*'  # Matches: pytorch-cu121-v1.0.0, pytorch-cu118-v0.5.0, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build wheel for ${{ matrix.stack }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - stack: pytorch-cu121
+            tag_prefix: pytorch-cu121-v
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check if tag matches this stack
+      id: check-tag
+      run: |
+        TAG="${{ github.ref_name }}"
+        EXPECTED_PREFIX="${{ matrix.tag_prefix }}"
+        if [[ "$TAG" == "$EXPECTED_PREFIX"* ]]; then
+          VERSION="${TAG#$EXPECTED_PREFIX}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "matched=true" >> $GITHUB_OUTPUT
+          echo "Stack: ${{ matrix.stack }}, Version: $VERSION"
+        else
+          echo "matched=false" >> $GITHUB_OUTPUT
+          echo "Tag doesn't match this stack, skipping"
+        fi
+
+    - name: Set up Python
+      if: steps.check-tag.outputs.matched == 'true'
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install build dependencies
+      if: steps.check-tag.outputs.matched == 'true'
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel poetry
+
+    - name: Verify version in pyproject.toml matches tag
+      if: steps.check-tag.outputs.matched == 'true'
+      run: |
+        PYPROJECT_VERSION=$(grep -A 1 "^\[tool.poetry\]" stacks/${{ matrix.stack }}/pyproject.toml | grep "^version = " | cut -d'"' -f2)
+        TAG_VERSION="${{ steps.check-tag.outputs.version }}"
+        if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch!"
+          echo "   pyproject.toml: $PYPROJECT_VERSION"
+          echo "   git tag:        $TAG_VERSION"
+          exit 1
+        fi
+        echo "✅ Versions match: $PYPROJECT_VERSION"
+
+    - name: Build wheel
+      if: steps.check-tag.outputs.matched == 'true'
+      run: |
+        cd stacks/${{ matrix.stack }}
+        python -m build --wheel
+
+    - name: Create Release
+      if: steps.check-tag.outputs.matched == 'true'
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ matrix.stack }} v${{ steps.check-tag.outputs.version }}
+        body: |
+          ## ${{ matrix.stack }} v${{ steps.check-tag.outputs.version }}
+
+          Wheel distribution for ${{ matrix.stack }}.
+
+          ### Installation
+          ```bash
+          pip install https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ml_stack_pytorch-${{ steps.check-tag.outputs.version }}-py3-none-any.whl
+          ```
+
+          Or with extras:
+          ```bash
+          pip install "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ml_stack_pytorch-${{ steps.check-tag.outputs.version }}-py3-none-any.whl[ml,vision]"
+          ```
+        files: stacks/${{ matrix.stack }}/dist/*
+        draft: false
+        prerelease: false
