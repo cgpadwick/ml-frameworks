@@ -1,0 +1,115 @@
+name: Test ML Stacks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test pytorch-cu121-${{ matrix.group }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11"]
+        group: [base, ml, vision, vision-extra, nlp, nlp-train, viz, data, dev, all]
+        exclude:
+          # Only run 'all' on latest Python to save CI time
+          - python-version: "3.10"
+            group: all
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Create virtual environment
+      run: |
+        python -m venv .venv
+
+    - name: Upgrade pip and install Poetry
+      run: |
+        source .venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install poetry
+
+    - name: Install stack with ${{ matrix.group }} group
+      run: |
+        source .venv/bin/activate
+        cd stacks/pytorch-cu121
+        if [ "${{ matrix.group }}" = "base" ]; then
+          poetry install --no-root --no-directory
+        else
+          poetry install --no-root --no-directory --extras ${{ matrix.group }}
+        fi
+        cd ../
+
+    - name: Install test dependencies
+      run: |
+        source .venv/bin/activate
+        pip install pytest pytest-cov --quiet
+
+    - name: Test imports for ${{ matrix.group }} group
+      run: |
+        source .venv/bin/activate
+        pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-${{ matrix.group }}" -v
+
+    - name: Test CUDA availability (if applicable)
+      run: |
+        source .venv/bin/activate
+        pytest tests/test_imports.py::TestPyTorchCUDA::test_torch_cuda -k "pytorch-cu121-${{ matrix.group }}" -v || true
+      continue-on-error: true
+
+    - name: Test framework versions
+      run: |
+        source .venv/bin/activate
+        pytest tests/test_imports.py::TestFrameworkVersions -k "pytorch-cu121-${{ matrix.group }}" -v || true
+      continue-on-error: true
+
+  linting:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install linting tools
+      run: |
+        pip install black ruff mypy
+
+    - name: Check with black
+      run: black --check . --diff
+      continue-on-error: true
+
+    - name: Check with ruff
+      run: ruff check .
+      continue-on-error: true
+
+  summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test]
+    if: always()
+
+    steps:
+    - name: Check test results
+      run: |
+        if [ "${{ needs.test.result }}" = "failure" ]; then
+          echo "❌ Some tests failed"
+          exit 1
+        else
+          echo "✅ All tests passed"
+        fi

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=65", "setuptools-scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-frameworks"
+version = "0.1.0"
+description = "Composable ML stacks - install only what you need"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "ML Frameworks Contributors", email = "contributors@example.com"}
+]
+license = {text = "MIT"}
+keywords = ["ml", "pytorch", "tensorflow", "cuda"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/ml-frameworks"
+Documentation = "https://github.com/yourusername/ml-frameworks#readme"
+Repository = "https://github.com/yourusername/ml-frameworks.git"
+Issues = "https://github.com/yourusername/ml-frameworks/issues"
+
+[tool.setuptools]
+packages = ["ml_frameworks"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --tb=short"
