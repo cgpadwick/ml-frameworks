@@ -53,7 +53,7 @@ jobs:
     - name: Verify version in pyproject.toml matches tag
       if: steps.check-tag.outputs.matched == 'true'
       run: |
-        PYPROJECT_VERSION=$(grep -A 1 "^\[tool.poetry\]" stacks/${{ matrix.stack }}/pyproject.toml | grep "^version = " | cut -d'"' -f2)
+        PYPROJECT_VERSION=$(grep "^version = " stacks/${{ matrix.stack }}/pyproject.toml | head -1 | cut -d'"' -f2)
         TAG_VERSION="${{ steps.check-tag.outputs.version }}"
         if [ "$PYPROJECT_VERSION" != "$TAG_VERSION" ]; then
           echo "❌ Version mismatch!"
