@@ -62,6 +62,7 @@ albumentations = {version = "^1.3.1", optional = true}
 imgaug = {version = "^0.4.0", optional = true}
 
 # Vision-extra group - Advanced CV frameworks
+mmcv = {version = ">=2.0.0rc4,<2.2.0", optional = true}
 mmdet = {version = "^3.2.0", optional = true}
 ultralytics = {version = "^8.0.0", optional = true}
 timm = {version = "^0.9.0", optional = true}
@@ -111,12 +112,12 @@ pre-commit = "^3.4.0"
 base = []
 ml = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf"]
 vision = ["opencv-python", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations", "imgaug"]
-vision-extra = ["mmdet", "ultralytics", "timm"]
+vision-extra = ["mmcv", "mmdet", "ultralytics", "timm"]
 nlp = ["transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score"]
 nlp-train = ["trl", "bitsandbytes", "deepspeed"]
 viz = ["matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython"]
 data = ["dask", "polars", "pyarrow", "scikit-learn"]
-all = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf", "opencv-python", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations", "imgaug", "mmdet", "ultralytics", "timm", "transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score", "trl", "bitsandbytes", "deepspeed", "matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython", "dask", "polars", "pyarrow", "scikit-learn"]
+all = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf", "opencv-python", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations", "imgaug", "mmcv", "mmdet", "ultralytics", "timm", "transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score", "trl", "bitsandbytes", "deepspeed", "matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython", "dask", "polars", "pyarrow", "scikit-learn"]
 
 [tool.black]
 line-length = 100

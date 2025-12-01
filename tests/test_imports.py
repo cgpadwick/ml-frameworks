@@ -37,6 +37,7 @@ class TestImports:
             "scikit-image": "import skimage",
             "pytorch-lightning": "import pytorch_lightning",
             "rouge-score": "from rouge_score import rouge_scorer",
+            "ipython": "import IPython",
         }
 
         for package_name in dependencies:
