@@ -3,7 +3,7 @@ name: Build and Release Stack Wheels
 on:
   push:
     tags:
-      - '*-v*'  # Matches: pytorch-cu121-v1.0.0, pytorch-cu118-v0.5.0, etc.
+      - '*-v*'  # Matches: pytorch-cu121-v1.0.0, pytorch-cu126-v1.0.0, etc.
 
 permissions:
   contents: write
@@ -19,6 +19,8 @@ jobs:
         include:
           - stack: pytorch-cu121
             tag_prefix: pytorch-cu121-v
+          - stack: pytorch-cu126
+            tag_prefix: pytorch-cu126-v
 
     steps:
     - uses: actions/checkout@v4

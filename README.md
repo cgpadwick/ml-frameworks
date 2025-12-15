@@ -11,9 +11,16 @@ Composable, tested ML stacks - install only what you need. Each stack is indepen
 Currently available:
 
 - **pytorch-cu121** - Complete PyTorch stack with CUDA 12.1
-  - PyTorch, Lightning, transformers, YOLOv8, timm, MMDetection
+  - PyTorch 2.3.1, Lightning, transformers, YOLOv8, timm
   - NLP, vision, data processing, visualization, dev tools
   - ~50GB installation
+  - Recommended for wider GPU compatibility
+
+- **pytorch-cu126** - Complete PyTorch stack with CUDA 12.6
+  - PyTorch 2.9.0, Lightning, transformers, YOLOv8, timm
+  - NLP, vision, data processing, visualization, dev tools
+  - ~50GB installation
+  - Recommended for newer GPUs (Ampere/Hopper architectures)
 
 Planned:
 - **pytorch-cu118** - PyTorch with CUDA 11.8 (for older systems)
@@ -34,10 +41,15 @@ source .venv/bin/activate
 pip install poetry
 
 # Install stack with desired groups
+# For CUDA 12.1:
 cd stacks/pytorch-cu121
 poetry install -E ml,vision        # base + ml + vision groups
 poetry install -E all              # all groups
 poetry install                     # base only
+
+# For CUDA 12.6:
+cd stacks/pytorch-cu126
+poetry install -E ml,vision        # base + ml + vision groups
 ```
 
 **Windows:**
@@ -47,13 +59,18 @@ python -m venv .venv
 
 pip install poetry
 
+# For CUDA 12.1:
 cd stacks\pytorch-cu121
+poetry install -E ml,vision
+
+# For CUDA 12.6:
+cd stacks\pytorch-cu126
 poetry install -E ml,vision
 ```
 
 ### Why Poetry?
 
-Poetry reads the CUDA 12.1 PyTorch index configuration from `pyproject.toml` automatically. The lock file (`poetry.lock`) ensures reproducible installs across all environments.
+Poetry reads the CUDA PyTorch index configuration from `pyproject.toml` automatically. The lock file (`poetry.lock`) ensures reproducible installs across all environments.
 
 ## Testing
 
@@ -100,6 +117,9 @@ ml-frameworks/
 │   ├── pytorch-cu121/      # PyTorch with CUDA 12.1
 │   │   ├── pyproject.toml  # Stack dependencies
 │   │   └── README.md       # Stack documentation
+│   ├── pytorch-cu126/      # PyTorch with CUDA 12.6
+│   │   ├── pyproject.toml  # Stack dependencies
+│   │   └── README.md       # Stack documentation
 │   ├── pytorch-cu118/      # (Coming soon)
 │   └── all-cu121/          # (Coming soon)
 └── tests/                  # Shared test infrastructure
@@ -107,16 +127,16 @@ ml-frameworks/
     └── test_imports.py     # Import & compatibility tests
 ```
 
-## pytorch-cu121 Stack
+## PyTorch Stack Groups
 
-A modular PyTorch stack with 9 optional dependency groups. Install only what you need!
+Both `pytorch-cu121` and `pytorch-cu126` stacks share the same modular structure with 9 optional dependency groups. The only difference is the CUDA version and PyTorch version. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
 | **base** | Core data science | numpy, pandas, scipy, pydantic |
 | **ml** | ML training | PyTorch, Lightning, ONNX, Triton, Optuna |
 | **vision** | Basic CV | OpenCV, Pillow, albumentations, scikit-image |
-| **vision-extra** | Advanced CV | YOLOv8, timm, MMDetection |
+| **vision-extra** | Advanced CV | YOLOv8, timm |
 | **nlp** | NLP tasks | transformers, datasets, PEFT, accelerate |
 | **nlp-train** | NLP training | TRL, bitsandbytes, DeepSpeed |
 | **viz** | Visualization | matplotlib, plotly, streamlit, jupyter |
@@ -125,16 +145,23 @@ A modular PyTorch stack with 9 optional dependency groups. Install only what you
 
 ### Installation Examples
 
+Choose your CUDA version (cu121 or cu126) and install the groups you need:
+
 ```bash
+# For CUDA 12.1:
 cd stacks/pytorch-cu121
 
+# For CUDA 12.6:
+cd stacks/pytorch-cu126
+
+# Then install desired groups:
 poetry install                    # base only
 poetry install -E ml              # base + ml
 poetry install -E ml,vision       # base + ml + vision
 poetry install -E all             # everything
 ```
 
-Each group is independently tested for compatibility!
+Each group is independently tested for compatibility on both CUDA versions!
 
 ## Requirements
 
