@@ -16,6 +16,12 @@ Currently available:
   - ~50GB installation
   - Recommended for wider GPU compatibility
 
+- **pytorch-cu118** - Complete PyTorch stack with CUDA 11.8
+  - PyTorch 2.3.1, Lightning, transformers, YOLOv8, timm
+  - NLP, vision, data processing, visualization, dev tools
+  - ~50GB installation
+  - Recommended for older driver stacks / systems that can't use CUDA 12.x
+
 - **pytorch-cu126** - Complete PyTorch stack with CUDA 12.6
   - PyTorch 2.9.0, Lightning, transformers, YOLOv8, timm
   - NLP, vision, data processing, visualization, dev tools
@@ -23,7 +29,6 @@ Currently available:
   - Recommended for newer GPUs (Ampere/Hopper architectures)
 
 Planned:
-- **pytorch-cu118** - PyTorch with CUDA 11.8 (for older systems)
 - **all-cu121** - All-in-one (PyTorch + TensorFlow + everything)
 - **tensorflow-cu121** - TensorFlow alternative
 
@@ -41,6 +46,12 @@ source .venv/bin/activate
 pip install poetry
 
 # Install stack with desired groups
+# For CUDA 11.8:
+cd stacks/pytorch-cu118
+poetry install -E ml,vision        # base + ml + vision groups
+poetry install -E all              # all groups
+poetry install                     # base only
+
 # For CUDA 12.1:
 cd stacks/pytorch-cu121
 poetry install -E ml,vision        # base + ml + vision groups
@@ -58,6 +69,10 @@ python -m venv .venv
 .venv\Scripts\activate
 
 pip install poetry
+
+# For CUDA 11.8:
+cd stacks\pytorch-cu118
+poetry install -E ml,vision
 
 # For CUDA 12.1:
 cd stacks\pytorch-cu121
@@ -83,6 +98,7 @@ pytest tests/test_imports.py -v
 
 **Run tests for specific group:**
 ```bash
+pytest tests/test_imports.py -k "pytorch-cu118-ml" -v
 pytest tests/test_imports.py -k "pytorch-cu121-ml" -v
 ```
 
@@ -120,7 +136,7 @@ ml-frameworks/
 │   ├── pytorch-cu126/      # PyTorch with CUDA 12.6
 │   │   ├── pyproject.toml  # Stack dependencies
 │   │   └── README.md       # Stack documentation
-│   ├── pytorch-cu118/      # (Coming soon)
+│   ├── pytorch-cu118/      # PyTorch with CUDA 11.8
 │   └── all-cu121/          # (Coming soon)
 └── tests/                  # Shared test infrastructure
     ├── conftest.py         # Parametrized fixtures for all stacks
@@ -129,7 +145,7 @@ ml-frameworks/
 
 ## PyTorch Stack Groups
 
-Both `pytorch-cu121` and `pytorch-cu126` stacks share the same modular structure with 9 optional dependency groups. The only difference is the CUDA version and PyTorch version. Install only what you need!
+`pytorch-cu118`, `pytorch-cu121`, and `pytorch-cu126` share the same modular structure with 9 optional dependency groups. The main differences are the CUDA and PyTorch versions. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
@@ -145,9 +161,12 @@ Both `pytorch-cu121` and `pytorch-cu126` stacks share the same modular structure
 
 ### Installation Examples
 
-Choose your CUDA version (cu121 or cu126) and install the groups you need:
+Choose your CUDA version (cu118, cu121, or cu126) and install the groups you need:
 
 ```bash
+# For CUDA 11.8:
+cd stacks/pytorch-cu118
+
 # For CUDA 12.1:
 cd stacks/pytorch-cu121
 
@@ -161,27 +180,27 @@ poetry install -E ml,vision       # base + ml + vision
 poetry install -E all             # everything
 ```
 
-Each group is independently tested for compatibility on both CUDA versions!
+Each group is independently tested for compatibility across all CUDA variants!
 
 ## Requirements
 
 - Python 3.10, 3.11, or 3.12
 - CUDA compatible GPU (or CPU mode)
-- ~50GB disk space for full pytorch-cu121 installation
+- ~50GB disk space for a full PyTorch stack (`-E all`)
 
 ## Adding New Stacks
 
 To add a new stack variant:
 
-1. Create directory: `stacks/pytorch-cu118/`
+1. Create directory: `stacks/pytorch-cu117/`
 2. Copy and modify `pyproject.toml` (change CUDA version, dependencies)
 3. Add `README.md` with stack documentation
 4. Run `pytest` - your stack will be auto-discovered and tested!
 
 Example:
 ```bash
-mkdir -p stacks/pytorch-cu118
-cp stacks/pytorch-cu121/pyproject.toml stacks/pytorch-cu118/
+mkdir -p stacks/pytorch-cu117
+cp stacks/pytorch-cu121/pyproject.toml stacks/pytorch-cu117/
 # Edit to use CUDA 11.8 PyTorch index
 pytest  # Automatically discovered!
 ```
