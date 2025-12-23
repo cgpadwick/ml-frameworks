@@ -39,7 +39,7 @@ jobs:
 
     - name: Run tests for ${{ matrix.group }} group
       run: |
-        pytest tests/test_imports.py::TestImports::test_all_imports -k "${{ matrix.stack }}-${{ matrix.group }}" -v --tb=short
+        pytest tests/test_imports.py::TestImports::test_all_imports -k "[${{ matrix.stack }}-${{ matrix.group }}]" -v --tb=short
       timeout-minutes: 90
 
   linting:
