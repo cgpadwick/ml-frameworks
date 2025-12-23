@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        stack: [pytorch-cu121, pytorch-cu126]
+        stack: [pytorch-cu118, pytorch-cu121, pytorch-cu126]
         python-version: ["3.10", "3.11"]
         group: [base, ml, vision, vision-extra, nlp, nlp-train, viz, data, all]
         exclude:

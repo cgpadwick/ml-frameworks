@@ -10,6 +10,7 @@ Automated testing and deployment workflows for ML Frameworks stacks.
 
 **Matrix Testing:**
 - Python versions: 3.10, 3.11
+- Stacks: pytorch-cu118, pytorch-cu121, pytorch-cu126
 - Groups: base, ml, vision, vision-extra, nlp, nlp-train, viz, data, dev, all
 - Total: 18 test jobs (excludes 'all' on Python 3.10 to save CI time)
 
@@ -62,7 +63,7 @@ Add to README.md:
 - Significantly speeds up subsequent runs (saves 5-10 minutes)
 
 ### CUDA Considerations
-- PyTorch CUDA 12.1 index configured in `stacks/pytorch-cu121/pyproject.toml` via Poetry sources
+- PyTorch CUDA index configured in each stack `pyproject.toml` via Poetry sources (cu118, cu121, cu126)
 - Poetry respects source priorities automatically
 - CPU-only PyTorch still works in GitHub Actions runners
 - CUDA tests gracefully skip if not available
