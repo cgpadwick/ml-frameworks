@@ -8,13 +8,14 @@ on:
 
 jobs:
   test:
-    name: Test pytorch-cu121-${{ matrix.group }}
+    name: Test ${{ matrix.stack }}-${{ matrix.group }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
     strategy:
       fail-fast: false
       matrix:
+        stack: [pytorch-cu121, pytorch-cu126]
         python-version: ["3.10", "3.11"]
         group: [base, ml, vision, vision-extra, nlp, nlp-train, viz, data, all]
         exclude:
@@ -38,7 +39,7 @@ jobs:
 
     - name: Run tests for ${{ matrix.group }} group
       run: |
-        pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-${{ matrix.group }}" -v --tb=short
+        pytest tests/test_imports.py::TestImports::test_all_imports -k "[${{ matrix.stack }}-${{ matrix.group }}]" -v --tb=short
       timeout-minutes: 90
 
   linting:
