@@ -66,14 +66,14 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install poetry
 
 # Install base only
-poetry install
+poetry install --no-root
 
 # Install base + specific groups
-poetry install -E ml,vision
-poetry install -E nlp,viz
+poetry install --no-root -E ml -E vision
+poetry install --no-root -E nlp -E viz
 
 # Install all
-poetry install -E all
+poetry install --no-root -E all
 ```
 
 Poetry automatically uses the CUDA 11.8 PyTorch index configured in `pyproject.toml`.

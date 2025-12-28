@@ -48,19 +48,19 @@ pip install poetry
 # Install stack with desired groups
 # For CUDA 11.8:
 cd stacks/pytorch-cu118
-poetry install -E ml,vision        # base + ml + vision groups
-poetry install -E all              # all groups
-poetry install                     # base only
+poetry install --no-root -E ml -E vision        # base + ml + vision groups
+poetry install --no-root -E all                 # all groups
+poetry install --no-root                        # base only
 
 # For CUDA 12.1:
 cd stacks/pytorch-cu121
-poetry install -E ml,vision        # base + ml + vision groups
-poetry install -E all              # all groups
-poetry install                     # base only
+poetry install --no-root -E ml -E vision        # base + ml + vision groups
+poetry install --no-root -E all                 # all groups
+poetry install --no-root                        # base only
 
 # For CUDA 12.6:
 cd stacks/pytorch-cu126
-poetry install -E ml,vision        # base + ml + vision groups
+poetry install --no-root -E ml -E vision        # base + ml + vision groups
 ```
 
 **Windows:**
@@ -72,15 +72,15 @@ pip install poetry
 
 # For CUDA 11.8:
 cd stacks\pytorch-cu118
-poetry install -E ml,vision
+poetry install --no-root -E ml -E vision
 
 # For CUDA 12.1:
 cd stacks\pytorch-cu121
-poetry install -E ml,vision
+poetry install --no-root -E ml -E vision
 
 # For CUDA 12.6:
 cd stacks\pytorch-cu126
-poetry install -E ml,vision
+poetry install --no-root -E ml -E vision
 ```
 
 ### Why Poetry?
@@ -112,7 +112,7 @@ pytest tests/test_imports.py::TestImports -v
 For each dependency group:
 1. Create a fresh Python 3.10 virtual environment
 2. Install Poetry into the venv
-3. Run `poetry install -E {group}` to install that group's dependencies
+3. Run `poetry install --no-root -E {group}` to install that group's dependencies
 4. Verify every package imports successfully
 5. Test CUDA functionality (if torch is installed)
 6. Validate major framework versions (torch, transformers, etc.)
@@ -174,10 +174,10 @@ cd stacks/pytorch-cu121
 cd stacks/pytorch-cu126
 
 # Then install desired groups:
-poetry install                    # base only
-poetry install -E ml              # base + ml
-poetry install -E ml,vision       # base + ml + vision
-poetry install -E all             # everything
+poetry install --no-root                    # base only
+poetry install --no-root -E ml              # base + ml
+poetry install --no-root -E ml -E vision    # base + ml + vision
+poetry install --no-root -E all             # everything
 ```
 
 Each group is independently tested for compatibility across all CUDA variants!
