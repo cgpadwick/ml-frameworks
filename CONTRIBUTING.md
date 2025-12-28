@@ -18,7 +18,7 @@ pip install poetry
 
 # Install stack for development (with all groups)
 cd stacks/pytorch-cu121
-poetry install --extras all
+poetry install --no-root -E all
 cd ../..
 
 # Install dev tools
@@ -140,7 +140,7 @@ package_to_import = {
 
 ```bash
 cd stacks/pytorch-cu121
-poetry install --extras ml
+poetry install --no-root -E ml
 poetry run pytest ../../tests -k "pytorch-cu121-ml" -v
 ```
 
