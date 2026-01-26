@@ -66,14 +66,14 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install poetry
 
 # Install base only
-poetry install
+poetry install --no-root
 
 # Install base + specific groups
-poetry install -E ml,vision
-poetry install -E nlp,viz
+poetry install --no-root -E ml -E vision
+poetry install --no-root -E nlp -E viz
 
 # Install all
-poetry install -E all
+poetry install --no-root -E all
 ```
 
 Poetry automatically uses the CUDA 12.1 PyTorch index configured in `pyproject.toml`.
@@ -142,22 +142,22 @@ pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu121-ml
 
 ### Beginner (10GB)
 ```bash
-poetry install -E ml,vision,viz
+poetry install --no-root -E ml -E vision -E viz
 ```
 
 ### LLM Development (30GB)
 ```bash
-poetry install -E ml,nlp,nlp-train,viz
+poetry install --no-root -E ml -E nlp -E nlp-train -E viz
 ```
 
 ### Computer Vision (25GB)
 ```bash
-poetry install -E ml,vision,vision-extra,viz
+poetry install --no-root -E ml -E vision -E vision-extra -E viz
 ```
 
 ### Full Stack (50GB)
 ```bash
-poetry install -E all
+poetry install --no-root -E all
 ```
 
 ## Dependency Notes
