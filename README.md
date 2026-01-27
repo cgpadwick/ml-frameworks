@@ -28,6 +28,12 @@ Currently available:
   - ~50GB installation
   - Recommended for newer GPUs (Ampere/Hopper architectures)
 
+- **pytorch-cu130** - Complete PyTorch stack with CUDA 13.0 (Blackwell)
+  - PyTorch 2.9.1, Lightning, transformers, YOLOv8, timm
+  - NLP, vision, data processing, visualization, dev tools
+  - ~50GB installation
+  - Recommended for NVIDIA Blackwell GPUs (DGX Spark GB10, sm_120/sm_121)
+
 Planned:
 - **all-cu121** - All-in-one (PyTorch + TensorFlow + everything)
 - **tensorflow-cu121** - TensorFlow alternative
@@ -61,6 +67,10 @@ poetry install --no-root                        # base only
 # For CUDA 12.6:
 cd stacks/pytorch-cu126
 poetry install --no-root -E ml -E vision        # base + ml + vision groups
+
+# For CUDA 13.0 (Blackwell/DGX Spark):
+cd stacks/pytorch-cu130
+poetry install --no-root -E ml -E vision        # base + ml + vision groups
 ```
 
 **Windows:**
@@ -80,6 +90,10 @@ poetry install --no-root -E ml -E vision
 
 # For CUDA 12.6:
 cd stacks\pytorch-cu126
+poetry install --no-root -E ml -E vision
+
+# For CUDA 13.0 (Blackwell/DGX Spark):
+cd stacks\pytorch-cu130
 poetry install --no-root -E ml -E vision
 ```
 
@@ -130,13 +144,16 @@ ml-frameworks/
 ├── ml_frameworks/          # Root Python package
 │   └── __init__.py
 ├── stacks/                 # Stack definitions
+│   ├── pytorch-cu118/      # PyTorch with CUDA 11.8
 │   ├── pytorch-cu121/      # PyTorch with CUDA 12.1
 │   │   ├── pyproject.toml  # Stack dependencies
 │   │   └── README.md       # Stack documentation
 │   ├── pytorch-cu126/      # PyTorch with CUDA 12.6
 │   │   ├── pyproject.toml  # Stack dependencies
 │   │   └── README.md       # Stack documentation
-│   ├── pytorch-cu118/      # PyTorch with CUDA 11.8
+│   ├── pytorch-cu130/      # PyTorch with CUDA 13.0 (Blackwell/DGX Spark)
+│   │   ├── pyproject.toml  # Stack dependencies
+│   │   └── README.md       # Stack documentation
 │   └── all-cu121/          # (Coming soon)
 └── tests/                  # Shared test infrastructure
     ├── conftest.py         # Parametrized fixtures for all stacks
@@ -145,7 +162,7 @@ ml-frameworks/
 
 ## PyTorch Stack Groups
 
-`pytorch-cu118`, `pytorch-cu121`, and `pytorch-cu126` share the same modular structure with 9 optional dependency groups. The main differences are the CUDA and PyTorch versions. Install only what you need!
+`pytorch-cu118`, `pytorch-cu121`, `pytorch-cu126`, and `pytorch-cu130` share the same modular structure with 9 optional dependency groups. The main differences are the CUDA and PyTorch versions. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
@@ -161,7 +178,7 @@ ml-frameworks/
 
 ### Installation Examples
 
-Choose your CUDA version (cu118, cu121, or cu126) and install the groups you need:
+Choose your CUDA version (cu118, cu121, cu126, or cu130) and install the groups you need:
 
 ```bash
 # For CUDA 11.8:
@@ -172,6 +189,9 @@ cd stacks/pytorch-cu121
 
 # For CUDA 12.6:
 cd stacks/pytorch-cu126
+
+# For CUDA 13.0 (Blackwell/DGX Spark):
+cd stacks/pytorch-cu130
 
 # Then install desired groups:
 poetry install --no-root                    # base only
