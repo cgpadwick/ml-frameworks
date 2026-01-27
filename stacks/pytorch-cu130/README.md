@@ -27,7 +27,7 @@ Core machine learning:
 
 ### Vision
 Basic computer vision:
-- OpenCV, OpenCV contrib
+- OpenCV (opencv-contrib-python - includes all opencv-python features plus extra modules)
 - scikit-image, Pillow
 - albumentations
 

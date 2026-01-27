@@ -55,7 +55,8 @@ optuna = {version = "^3.0.0", optional = true}
 omegaconf = {version = "^2.3.0", optional = true}
 
 # Vision group - Basic computer vision
-opencv-python = {version = "^4.8.0", optional = true}
+# Note: Use opencv-contrib-python only (includes all opencv-python features plus extra modules)
+# Do NOT install both opencv-python and opencv-contrib-python - they conflict on the cv2 namespace
 opencv-contrib-python = {version = "^4.8.0", optional = true}
 scikit-image = {version = "^0.22.0", optional = true}
 Pillow = {version = "^10.0.0", optional = true}
@@ -109,13 +110,13 @@ pre-commit = "^3.4.0"
 [tool.poetry.extras]
 base = []
 ml = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf"]
-vision = ["opencv-python", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations"]
+vision = ["opencv-contrib-python", "scikit-image", "Pillow", "albumentations"]
 vision-extra = ["ultralytics", "timm"]
 nlp = ["transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score"]
 nlp-train = ["trl", "bitsandbytes", "deepspeed"]
 viz = ["matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython"]
 data = ["dask", "polars", "pyarrow", "scikit-learn"]
-all = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf", "opencv-python", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations", "ultralytics", "timm", "transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score", "trl", "bitsandbytes", "deepspeed", "matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython", "dask", "polars", "pyarrow", "scikit-learn"]
+all = ["torch", "torchvision", "torchaudio", "pytorch-lightning", "lightning", "torchmetrics", "torchinfo", "tensorboard", "onnx", "onnxruntime", "triton", "einops", "optuna", "omegaconf", "opencv-contrib-python", "scikit-image", "Pillow", "albumentations", "ultralytics", "timm", "transformers", "datasets", "sentencepiece", "tokenizers", "peft", "accelerate", "evaluate", "sacrebleu", "rouge-score", "trl", "bitsandbytes", "deepspeed", "matplotlib", "seaborn", "plotly", "bokeh", "streamlit", "dash", "gradio", "jupyter", "ipython", "dask", "polars", "pyarrow", "scikit-learn"]
 
 [tool.black]
 line-length = 100

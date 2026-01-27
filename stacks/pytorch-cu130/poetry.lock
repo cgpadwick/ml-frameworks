@@ -3943,9 +3943,9 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.2", markers = "python_version >= \"3.10\""},
-    {version = ">=1.23.3", markers = "python_version >= \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.3", markers = "python_version >= \"3.11\""},
+    {version = ">=1.21.2", markers = "python_version >= \"3.10\""},
 ]
 
 [package.extras]
@@ -4977,10 +4977,10 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
-    {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.5", markers = "python_version == \"3.11\""},
+    {version = ">=1.21.4", markers = "python_version == \"3.10\" and platform_system == \"Darwin\""},
+    {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version == \"3.10\""},
 ]
 
 [[package]]
@@ -4990,7 +4990,7 @@ description = "Wrapper package for OpenCV python bindings."
 optional = true
 python-versions = ">=3.6"
 groups = ["main"]
-markers = "extra == \"vision\" or extra == \"all\" or extra == \"vision-extra\""
+markers = "extra == \"vision-extra\" or extra == \"all\""
 files = [
     {file = "opencv-python-4.11.0.86.tar.gz", hash = "sha256:03d60ccae62304860d232272e4a4fda93c39d595780cb40b161b310244b736a4"},
     {file = "opencv_python-4.11.0.86-cp37-abi3-macosx_13_0_arm64.whl", hash = "sha256:432f67c223f1dc2824f5e73cdfcd9db0efc8710647d4e813012195dc9122a52a"},
@@ -5003,10 +5003,10 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
-    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
 ]
 
 [[package]]
@@ -5029,10 +5029,10 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
-    {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
 ]
 
 [[package]]
@@ -5255,9 +5255,9 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.22.4", markers = "python_version < \"3.11\""},
-    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
     {version = ">=1.26.0", markers = "python_version >= \"3.12\""},
+    {version = ">=1.23.2", markers = "python_version == \"3.11\""},
+    {version = ">=1.22.4", markers = "python_version < \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -7565,7 +7565,7 @@ description = "Easily download, build, install, upgrade, and uninstall Python pa
 optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "extra == \"ml\" or extra == \"all\" or extra == \"viz\" or python_version == \"3.12\" and (extra == \"ml\" or extra == \"all\" or extra == \"viz\" or extra == \"vision-extra\" or extra == \"nlp\" or extra == \"nlp-train\")"
+markers = "(extra == \"ml\" or extra == \"all\" or extra == \"viz\" or python_version == \"3.12\") and (extra == \"vision-extra\" or extra == \"all\" or extra == \"ml\" or extra == \"nlp\" or extra == \"nlp-train\" or extra == \"viz\")"
 files = [
     {file = "setuptools-80.10.2-py3-none-any.whl", hash = "sha256:95b30ddfb717250edb492926c92b5221f7ef3fbcc2b07579bcd4a27da21d0173"},
     {file = "setuptools-80.10.2.tar.gz", hash = "sha256:8b0e9d10c784bf7d262c4e5ec5d4ec94127ce206e8738f29a437945fbc219b70"},
@@ -9632,17 +9632,17 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more_it
 type = ["pytest-mypy"]
 
 [extras]
-all = ["Pillow", "accelerate", "albumentations", "bitsandbytes", "bokeh", "dash", "dask", "datasets", "deepspeed", "einops", "evaluate", "gradio", "ipython", "jupyter", "lightning", "matplotlib", "omegaconf", "onnx", "onnxruntime", "opencv-contrib-python", "opencv-python", "optuna", "peft", "plotly", "polars", "pyarrow", "pytorch-lightning", "rouge-score", "sacrebleu", "scikit-image", "scikit-learn", "seaborn", "sentencepiece", "streamlit", "tensorboard", "timm", "tokenizers", "torch", "torchaudio", "torchinfo", "torchmetrics", "torchvision", "transformers", "triton", "trl", "ultralytics"]
+all = ["Pillow", "accelerate", "albumentations", "bitsandbytes", "bokeh", "dash", "dask", "datasets", "deepspeed", "einops", "evaluate", "gradio", "ipython", "jupyter", "lightning", "matplotlib", "omegaconf", "onnx", "onnxruntime", "opencv-contrib-python", "optuna", "peft", "plotly", "polars", "pyarrow", "pytorch-lightning", "rouge-score", "sacrebleu", "scikit-image", "scikit-learn", "seaborn", "sentencepiece", "streamlit", "tensorboard", "timm", "tokenizers", "torch", "torchaudio", "torchinfo", "torchmetrics", "torchvision", "transformers", "triton", "trl", "ultralytics"]
 base = []
 data = ["dask", "polars", "pyarrow", "scikit-learn"]
 ml = ["einops", "lightning", "omegaconf", "onnx", "onnxruntime", "optuna", "pytorch-lightning", "tensorboard", "torch", "torchaudio", "torchinfo", "torchmetrics", "torchvision", "triton"]
 nlp = ["accelerate", "datasets", "evaluate", "peft", "rouge-score", "sacrebleu", "sentencepiece", "tokenizers", "transformers"]
 nlp-train = ["bitsandbytes", "deepspeed", "trl"]
-vision = ["Pillow", "albumentations", "opencv-contrib-python", "opencv-python", "scikit-image"]
+vision = ["Pillow", "albumentations", "opencv-contrib-python", "scikit-image"]
 vision-extra = ["timm", "ultralytics"]
 viz = ["bokeh", "dash", "gradio", "ipython", "jupyter", "matplotlib", "plotly", "seaborn", "streamlit"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.13"
-content-hash = "985fd2cdae023b4398ea3e7da3bf7d6e944799118b7d9cea36cd8a3473821d34"
+content-hash = "a2d4ce5e2d057ff1eb6daa0aad4622d99cd713e63c445c50eec0583c8d6621b3"
