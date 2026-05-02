@@ -51,49 +51,29 @@ source .venv/bin/activate
 # Install Poetry
 pip install poetry
 
-# Install stack with desired groups
-# For CUDA 11.8:
-cd stacks/pytorch-cu118
-poetry install --no-root -E ml -E vision        # base + ml + vision groups
-poetry install --no-root -E all                 # all groups
-poetry install --no-root                        # base only
+# cd into the stack you want, then run ONE of the install variants below.
+# Note: each `poetry install` replaces the previously-installed extras;
+# the lines below are alternatives, not steps to run in sequence.
 
-# For CUDA 12.1:
-cd stacks/pytorch-cu121
-poetry install --no-root -E ml -E vision        # base + ml + vision groups
-poetry install --no-root -E all                 # all groups
-poetry install --no-root                        # base only
+# CUDA 11.8 / 12.1 / 12.6 / 13.0:
+cd stacks/pytorch-cu121          # or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
 
-# For CUDA 12.6:
-cd stacks/pytorch-cu126
-poetry install --no-root -E ml -E vision        # base + ml + vision groups
-
-# For CUDA 13.0 (Blackwell/DGX Spark):
-cd stacks/pytorch-cu130
-poetry install --no-root -E ml -E vision        # base + ml + vision groups
+poetry install --no-root                        # base only (numpy, pandas, sklearn, matplotlib, seaborn, ...)
+poetry install --no-root -E ml -E vision        # base + ml + vision
+poetry install --no-root -E ml -E nlp           # base + ml + nlp
+poetry install --no-root -E all                 # everything (~50GB)
 ```
 
+The **base** install is no longer minimal: it now includes scikit-learn, matplotlib, seaborn, joblib, requests, and rich — the standard tabular-ML / EDA toolkit. See the [Stack Groups table](#pytorch-stack-groups) below for what the optional `-E ...` groups add.
+
 **Windows:**
-```bash
+```bat
 python -m venv .venv
 .venv\Scripts\activate
 
 pip install poetry
 
-# For CUDA 11.8:
-cd stacks\pytorch-cu118
-poetry install --no-root -E ml -E vision
-
-# For CUDA 12.1:
-cd stacks\pytorch-cu121
-poetry install --no-root -E ml -E vision
-
-# For CUDA 12.6:
-cd stacks\pytorch-cu126
-poetry install --no-root -E ml -E vision
-
-# For CUDA 13.0 (Blackwell/DGX Spark):
-cd stacks\pytorch-cu130
+cd stacks\pytorch-cu121          REM or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
 poetry install --no-root -E ml -E vision
 ```
 
@@ -162,42 +142,36 @@ ml-frameworks/
 
 ## PyTorch Stack Groups
 
-`pytorch-cu118`, `pytorch-cu121`, `pytorch-cu126`, and `pytorch-cu130` share the same modular structure with 9 optional dependency groups. The main differences are the CUDA and PyTorch versions. Install only what you need!
+`pytorch-cu118`, `pytorch-cu121`, `pytorch-cu126`, and `pytorch-cu130` share the same modular structure: a `base` install that ships with every stack, plus 9 optional groups you can layer on with `-E`. The main differences are the CUDA and PyTorch versions. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
-| **base** | Core data science | numpy, pandas, scipy, pydantic |
+| **base** *(always installed)* | Core data + EDA toolkit | numpy, pandas, scipy, scikit-learn, joblib, matplotlib, seaborn, pydantic, requests, rich |
 | **ml** | ML training | PyTorch, Lightning, ONNX, Triton, Optuna |
 | **vision** | Basic CV | OpenCV, Pillow, albumentations, scikit-image |
 | **vision-extra** | Advanced CV | YOLOv8, timm |
 | **nlp** | NLP tasks | transformers, datasets, PEFT, accelerate |
 | **nlp-train** | NLP training | TRL, bitsandbytes, DeepSpeed |
-| **viz** | Visualization | matplotlib, plotly, streamlit, jupyter |
-| **data** | Data processing | Polars, Dask, PyArrow, scikit-learn |
-| **all** | Everything | All of the above |
+| **viz** | Extra plotting backend | plotly |
+| **viz-app** | Dashboards & notebooks | bokeh, streamlit, dash, gradio, jupyter, ipython |
+| **data** | Data processing & ETL | Polars, Dask, PyArrow |
+| **gnn** | Graph neural networks | torch-geometric (+ torch, torchvision, torchaudio) |
+| **all** | Everything | Union of all groups above |
 
 ### Installation Examples
 
-Choose your CUDA version (cu118, cu121, cu126, or cu130) and install the groups you need:
+Choose your CUDA version (cu118 / cu121 / cu126 / cu130), then pick **one** install line — each `poetry install` replaces the prior set of extras, so you can't compose them by running multiple lines in sequence.
 
 ```bash
-# For CUDA 11.8:
-cd stacks/pytorch-cu118
+cd stacks/pytorch-cu121          # or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
 
-# For CUDA 12.1:
-cd stacks/pytorch-cu121
-
-# For CUDA 12.6:
-cd stacks/pytorch-cu126
-
-# For CUDA 13.0 (Blackwell/DGX Spark):
-cd stacks/pytorch-cu130
-
-# Then install desired groups:
-poetry install --no-root                    # base only
-poetry install --no-root -E ml              # base + ml
-poetry install --no-root -E ml -E vision    # base + ml + vision
-poetry install --no-root -E all             # everything
+poetry install --no-root                              # base only (sklearn + matplotlib + seaborn included)
+poetry install --no-root -E ml                        # base + ml
+poetry install --no-root -E ml -E vision              # base + ml + vision
+poetry install --no-root -E ml -E nlp                 # base + ml + nlp
+poetry install --no-root -E ml -E vision -E viz-app   # base + ml + vision + dashboards
+poetry install --no-root -E gnn                       # base + torch + torch-geometric (graph nets)
+poetry install --no-root -E all                       # everything
 ```
 
 Each group is independently tested for compatibility across all CUDA variants!
@@ -242,7 +216,7 @@ pytest tests/test_imports.py -v
 Every push runs automated tests across all dependency groups. Tests create fresh environments for each group to ensure isolation and reproducibility.
 
 **Test Coverage:**
-- **9 dependency groups** independently tested (base, ml, vision, vision-extra, nlp, nlp-train, viz, data, all)
+- **11 dependency groups** independently tested (base, ml, vision, vision-extra, nlp, nlp-train, viz, viz-app, data, gnn, all)
 - **Package imports** verified for all dependencies
 - **Framework versions** validated (torch, transformers, lightning, etc.)
 - **CUDA functionality** tested (with graceful skip on CPU-only systems)

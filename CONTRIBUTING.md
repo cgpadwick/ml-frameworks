@@ -146,7 +146,7 @@ poetry run pytest ../../tests -k "pytorch-cu121-ml" -v
 
 ## PR Review Process
 
-1. **Automated checks** run (18 jobs × test matrix)
+1. **Automated checks** run across the full CI matrix (4 stacks × 2 Python versions × 11 dependency groups, minus a few `all`-on-3.10 excludes)
 2. **Code review** by maintainers
 3. **Manual testing** (for risky changes)
 4. **Merge** once approved and all checks pass
