@@ -5,10 +5,12 @@ A composable PyTorch ML stack with CUDA 11.8 support. Install only what you need
 ## Feature Groups
 
 ### Base (always included)
-Core data science libraries:
-- numpy (<2.0.0 for compatibility)
-- scipy, pandas
+Core data science + EDA libraries — every install gets these:
+- numpy (<2.0.0 for compatibility), scipy, pandas
+- scikit-learn, joblib (table-stakes for tabular ML)
+- matplotlib, seaborn (standard EDA plotting)
 - tqdm, pydantic, pyyaml, python-dotenv
+- requests, rich
 
 ### ML
 Core machine learning:
@@ -43,16 +45,23 @@ NLP training utilities:
 - DeepSpeed
 
 ### Viz
-Visualization & dashboards:
-- matplotlib, seaborn, plotly, bokeh
+Optional plotting backend (matplotlib + seaborn are in base):
+- plotly
+
+### Viz-App
+Dashboard & notebook tooling (heavy, opt-in):
+- bokeh
 - Streamlit, Dash, Gradio
 - Jupyter, IPython
 
 ### Data
-Data processing & ETL:
+Data processing & ETL (sklearn is in base):
 - Polars, Dask
 - PyArrow
-- scikit-learn
+
+### GNN
+Graph neural networks (heavyweight, opt-in):
+- torch-geometric
 
 ## Installation
 
@@ -71,6 +80,10 @@ poetry install --no-root
 # Install base + specific groups
 poetry install --no-root -E ml -E vision
 poetry install --no-root -E nlp -E viz
+
+# Add dashboard/notebook tooling or graph nets when needed
+poetry install --no-root -E viz-app
+poetry install --no-root -E gnn
 
 # Install all
 poetry install --no-root -E all

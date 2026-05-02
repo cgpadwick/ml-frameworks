@@ -5,10 +5,12 @@ A composable PyTorch ML stack with CUDA 12.6 support. Install only what you need
 ## Feature Groups
 
 ### Base (always included)
-Core data science libraries:
-- numpy (<2.0.0 for compatibility)
-- scipy, pandas
+Core data science + EDA libraries — every install gets these:
+- numpy (<2.0.0 for compatibility), scipy, pandas
+- scikit-learn, joblib (table-stakes for tabular ML)
+- matplotlib, seaborn (standard EDA plotting)
 - tqdm, pydantic, pyyaml, python-dotenv
+- requests, rich
 
 ### ML
 Core machine learning:
@@ -43,16 +45,23 @@ NLP training utilities:
 - DeepSpeed
 
 ### Viz
-Visualization & dashboards:
-- matplotlib, seaborn, plotly, bokeh
+Optional plotting backend (matplotlib + seaborn are in base):
+- plotly
+
+### Viz-App
+Dashboard & notebook tooling (heavy, opt-in):
+- bokeh
 - Streamlit, Dash, Gradio
 - Jupyter, IPython
 
 ### Data
-Data processing & ETL:
+Data processing & ETL (sklearn is in base):
 - Polars, Dask
 - PyArrow
-- scikit-learn
+
+### GNN
+Graph neural networks (heavyweight, opt-in):
+- torch-geometric
 
 ## Installation
 
@@ -72,6 +81,10 @@ poetry install --no-root
 poetry install --no-root -E ml -E vision
 poetry install --no-root -E nlp -E viz
 
+# Add dashboard/notebook tooling or graph nets when needed
+poetry install --no-root -E viz-app
+poetry install --no-root -E gnn
+
 # Install all
 poetry install --no-root -E all
 ```
@@ -84,6 +97,9 @@ Poetry automatically uses the CUDA 12.6 PyTorch index configured in `pyproject.t
 # Base (always available)
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # If installed [ml]
 import torch
@@ -100,11 +116,16 @@ from ultralytics import YOLO
 from transformers import AutoTokenizer
 
 # If installed [viz]
-import matplotlib.pyplot as plt
+import plotly.express as px
+
+# If installed [viz-app]
 import streamlit as st
 
 # If installed [data]
 import polars as pl
+
+# If installed [gnn]
+from torch_geometric.nn import GCNConv
 ```
 
 ## Testing
@@ -131,28 +152,28 @@ pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu126-ml
 
 ## Disk Usage Estimates
 
-- **base**: ~1GB
+- **base** (incl. sklearn + matplotlib/seaborn): ~1.5GB
 - **base + ml**: ~15GB
 - **base + ml + vision**: ~20GB
 - **base + ml + vision + nlp**: ~30GB
-- **base + ml + vision + nlp + viz**: ~35GB
+- **base + ml + vision + nlp + viz-app**: ~35GB
 - **all**: ~50GB
 
 ## Common Combinations
 
 ### Beginner (10GB)
 ```bash
-poetry install --no-root -E ml -E vision -E viz
+poetry install --no-root -E ml -E vision
 ```
 
 ### LLM Development (30GB)
 ```bash
-poetry install --no-root -E ml -E nlp -E nlp-train -E viz
+poetry install --no-root -E ml -E nlp -E nlp-train
 ```
 
 ### Computer Vision (25GB)
 ```bash
-poetry install --no-root -E ml -E vision -E vision-extra -E viz
+poetry install --no-root -E ml -E vision -E vision-extra
 ```
 
 ### Full Stack (50GB)
