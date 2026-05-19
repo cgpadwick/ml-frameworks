@@ -10,28 +10,25 @@ Composable, tested ML stacks - install only what you need. Each stack is indepen
 
 Currently available:
 
-- **pytorch-cu121** - Complete PyTorch stack with CUDA 12.1
-  - PyTorch 2.3.1, Lightning, transformers, YOLOv8, timm
-  - NLP, vision, data processing, visualization, dev tools
-  - ~50GB installation
+- **pytorch-cu121** - PyTorch 2.3.1 + CUDA 12.1
+  - Base ships with PyTorch + the standard tabular-ML / EDA toolkit (numpy, pandas, sklearn, matplotlib, seaborn)
+  - Optional groups: training, vision, vision-extra, nlp, viz, data, gnn
+  - ~5.5GB base; up to ~8-9GB for `-E all`
   - Recommended for wider GPU compatibility
 
-- **pytorch-cu118** - Complete PyTorch stack with CUDA 11.8
-  - PyTorch 2.3.1, Lightning, transformers, YOLOv8, timm
-  - NLP, vision, data processing, visualization, dev tools
-  - ~50GB installation
+- **pytorch-cu118** - PyTorch 2.3.1 + CUDA 11.8
+  - Same shape as cu121, older driver compatibility
+  - ~5.5GB base; up to ~8-9GB for `-E all`
   - Recommended for older driver stacks / systems that can't use CUDA 12.x
 
-- **pytorch-cu126** - Complete PyTorch stack with CUDA 12.6
-  - PyTorch 2.9.0, Lightning, transformers, YOLOv8, timm
-  - NLP, vision, data processing, visualization, dev tools
-  - ~50GB installation
+- **pytorch-cu126** - PyTorch 2.9.0 + CUDA 12.6
+  - Same shape as cu121, newer torch
+  - ~5.5GB base; up to ~8-9GB for `-E all`
   - Recommended for newer GPUs (Ampere/Hopper architectures)
 
-- **pytorch-cu130** - Complete PyTorch stack with CUDA 13.0 (Blackwell)
-  - PyTorch 2.9.1, Lightning, transformers, YOLOv8, timm
-  - NLP, vision, data processing, visualization, dev tools
-  - ~50GB installation
+- **pytorch-cu130** - PyTorch 2.10.0 + CUDA 13.0 (Blackwell)
+  - Same shape as cu121, latest torch with Blackwell support
+  - ~5.5GB base; up to ~8-9GB for `-E all`
   - Recommended for NVIDIA Blackwell GPUs (DGX Spark GB10, sm_120/sm_121)
 
 Planned:
@@ -58,13 +55,13 @@ pip install poetry
 # CUDA 11.8 / 12.1 / 12.6 / 13.0:
 cd stacks/pytorch-cu121          # or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
 
-poetry install --no-root                        # base only (numpy, pandas, sklearn, matplotlib, seaborn, ...)
-poetry install --no-root -E ml -E vision        # base + ml + vision
-poetry install --no-root -E ml -E nlp           # base + ml + nlp
-poetry install --no-root -E all                 # everything (~50GB)
+poetry install --no-root                              # base only (torch + tabular ML + EDA toolkit, ~5.5GB)
+poetry install --no-root -E training -E vision        # base + training utils + vision
+poetry install --no-root -E training -E nlp           # base + training utils + nlp
+poetry install --no-root -E all                       # everything (~8-9GB)
 ```
 
-The **base** install is no longer minimal: it now includes scikit-learn, matplotlib, seaborn, joblib, requests, and rich — the standard tabular-ML / EDA toolkit. See the [Stack Groups table](#pytorch-stack-groups) below for what the optional `-E ...` groups add.
+The **base** install includes PyTorch (torch/torchvision/torchaudio) plus the standard tabular-ML + EDA toolkit (numpy, scipy, pandas, scikit-learn, joblib, matplotlib, seaborn, pydantic, rich, …). `pytest` ships in base too so post-install verification works out of the box. See the [Stack Groups table](#pytorch-stack-groups) below for what the optional `-E ...` groups add.
 
 **Windows:**
 ```bat
@@ -74,7 +71,7 @@ python -m venv .venv
 pip install poetry
 
 cd stacks\pytorch-cu121          REM or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
-poetry install --no-root -E ml -E vision
+poetry install --no-root -E training -E vision
 ```
 
 ### Why Poetry?
@@ -92,8 +89,8 @@ pytest tests/test_imports.py -v
 
 **Run tests for specific group:**
 ```bash
-pytest tests/test_imports.py -k "pytorch-cu118-ml" -v
-pytest tests/test_imports.py -k "pytorch-cu121-ml" -v
+pytest tests/test_imports.py -k "pytorch-cu118-training" -v
+pytest tests/test_imports.py -k "pytorch-cu121-training" -v
 ```
 
 **Run specific test class:**
@@ -142,21 +139,21 @@ ml-frameworks/
 
 ## PyTorch Stack Groups
 
-`pytorch-cu118`, `pytorch-cu121`, `pytorch-cu126`, and `pytorch-cu130` share the same modular structure: a `base` install that ships with every stack, plus 9 optional groups you can layer on with `-E`. The main differences are the CUDA and PyTorch versions. Install only what you need!
+`pytorch-cu118`, `pytorch-cu121`, `pytorch-cu126`, and `pytorch-cu130` share the same modular structure: a `base` install that always ships with PyTorch + the standard scientific Python toolkit, plus optional groups you can layer on with `-E`. The main differences are the CUDA and PyTorch versions. Install only what you need!
 
 | Group | Purpose | Key Packages |
 |-------|---------|--------------|
-| **base** *(always installed)* | Core data + EDA toolkit | numpy, pandas, scipy, scikit-learn, joblib, matplotlib, seaborn, pydantic, requests, rich |
-| **ml** | ML training | PyTorch, Lightning, ONNX, Triton, Optuna |
+| **base** *(always installed)* | PyTorch + tabular ML + EDA toolkit | torch, torchvision, torchaudio, numpy, pandas, scipy, scikit-learn, joblib, matplotlib, seaborn, pydantic, requests, rich, pytest |
+| **training** | PyTorch ecosystem add-ons | Lightning, torchmetrics, TensorBoard, ONNX, Triton, einops, Optuna, OmegaConf |
 | **vision** | Basic CV | OpenCV, Pillow, albumentations, scikit-image |
 | **vision-extra** | Advanced CV | YOLOv8, timm |
 | **nlp** | NLP tasks | transformers, datasets, PEFT, accelerate |
-| **nlp-train** | NLP training | TRL, bitsandbytes, DeepSpeed |
 | **viz** | Extra plotting backend | plotly |
-| **viz-app** | Dashboards & notebooks | bokeh, streamlit, dash, gradio, jupyter, ipython |
 | **data** | Data processing & ETL | Polars, Dask, PyArrow |
-| **gnn** | Graph neural networks | torch-geometric (+ torch, torchvision, torchaudio) |
+| **gnn** | Graph neural networks | torch-geometric |
 | **all** | Everything | Union of all groups above |
+
+> **Note**: The previous `ml` group was renamed to `training` (torch itself is now in base). The previous `nlp-train` (TRL/DeepSpeed/bitsandbytes) and `viz-app` (Streamlit/Gradio/Jupyter/…) groups were removed — install those packages directly if you need them.
 
 ### Installation Examples
 
@@ -165,13 +162,12 @@ Choose your CUDA version (cu118 / cu121 / cu126 / cu130), then pick **one** inst
 ```bash
 cd stacks/pytorch-cu121          # or pytorch-cu118 / pytorch-cu126 / pytorch-cu130
 
-poetry install --no-root                              # base only (sklearn + matplotlib + seaborn included)
-poetry install --no-root -E ml                        # base + ml
-poetry install --no-root -E ml -E vision              # base + ml + vision
-poetry install --no-root -E ml -E nlp                 # base + ml + nlp
-poetry install --no-root -E ml -E vision -E viz-app   # base + ml + vision + dashboards
-poetry install --no-root -E gnn                       # base + torch + torch-geometric (graph nets)
-poetry install --no-root -E all                       # everything
+poetry install --no-root                                 # base only (torch + scientific Python)
+poetry install --no-root -E training                     # base + Lightning / ONNX / Triton / …
+poetry install --no-root -E training -E vision           # base + training + vision
+poetry install --no-root -E training -E nlp              # base + training + nlp
+poetry install --no-root -E gnn                          # base + torch-geometric (graph nets)
+poetry install --no-root -E all                          # everything (~8-9GB)
 ```
 
 Each group is independently tested for compatibility across all CUDA variants!
@@ -180,7 +176,7 @@ Each group is independently tested for compatibility across all CUDA variants!
 
 - Python 3.10, 3.11, or 3.12
 - CUDA compatible GPU (or CPU mode)
-- ~50GB disk space for a full PyTorch stack (`-E all`)
+- ~5.5GB disk for base; ~8-9GB for `-E all`
 
 ## Adding New Stacks
 
@@ -216,7 +212,7 @@ pytest tests/test_imports.py -v
 Every push runs automated tests across all dependency groups. Tests create fresh environments for each group to ensure isolation and reproducibility.
 
 **Test Coverage:**
-- **11 dependency groups** independently tested (base, ml, vision, vision-extra, nlp, nlp-train, viz, viz-app, data, gnn, all)
+- **9 dependency groups** independently tested (base, training, vision, vision-extra, nlp, viz, data, gnn, all)
 - **Package imports** verified for all dependencies
 - **Framework versions** validated (torch, transformers, lightning, etc.)
 - **CUDA functionality** tested (with graceful skip on CPU-only systems)

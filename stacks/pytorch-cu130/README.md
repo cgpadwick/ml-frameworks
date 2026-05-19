@@ -12,62 +12,51 @@ This stack is designed for:
 ## Feature Groups
 
 ### Base (always included)
-Core data science + EDA libraries — every install gets these:
+PyTorch + the standard scientific-Python toolkit — every install gets these:
+- PyTorch 2.10.0, torchvision 0.25.0, torchaudio 2.10.0 (CUDA 13.0)
 - numpy (<2.0.0 for compatibility), scipy, pandas
 - scikit-learn, joblib (table-stakes for tabular ML)
 - matplotlib, seaborn (standard EDA plotting)
 - tqdm, pydantic, pyyaml, python-dotenv
 - requests, rich
+- pytest, pytest-cov (so post-install verification works without extras)
 
-### ML
-Core machine learning:
-- PyTorch 2.9.1, torchvision 0.24.1, torchaudio 2.9.1 (CUDA 13.0)
+### training
+PyTorch ecosystem add-ons:
 - PyTorch Lightning
 - torchmetrics, torchinfo
 - TensorBoard, ONNX, ONNX Runtime
 - Triton, einops, Optuna, OmegaConf
 
-### Vision
+### vision
 Basic computer vision:
 - OpenCV (opencv-contrib-python - includes all opencv-python features plus extra modules)
 - scikit-image, Pillow
 - albumentations
 
-### Vision-Extra
+### vision-extra
 Advanced CV frameworks:
 - YOLOv8 (ultralytics)
 - timm (vision transformers)
 
-### NLP
+### nlp
 Core natural language processing:
 - Transformers, Datasets, Tokenizers
 - SentencePiece
 - PEFT, Accelerate
 - evaluate, sacrebleu, rouge-score
 
-### NLP-Train
-NLP training utilities:
-- TRL (Transformer Reinforcement Learning)
-- bitsandbytes (quantization) - *may have limited aarch64 support*
-- DeepSpeed - *may have limited aarch64 support*
-
-### Viz
-Optional plotting backend (matplotlib + seaborn are in base):
+### viz
+Extra plotting backend (matplotlib + seaborn are in base):
 - plotly
 
-### Viz-App
-Dashboard & notebook tooling (heavy, opt-in):
-- bokeh
-- Streamlit, Dash, Gradio
-- Jupyter, IPython
-
-### Data
+### data
 Data processing & ETL (sklearn is in base):
 - Polars, Dask
 - PyArrow
 
-### GNN
-Graph neural networks (heavyweight, opt-in):
+### gnn
+Graph neural networks (torch is in base, so this is just the GNN bits):
 - torch-geometric
 
 ## Installation
@@ -81,15 +70,14 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 # Install Poetry
 pip install poetry
 
-# Install base only
+# Install base only (PyTorch + scientific Python, ~5.5GB)
 poetry install --no-root
 
 # Install base + specific groups
-poetry install --no-root -E ml -E vision
+poetry install --no-root -E training -E vision
 poetry install --no-root -E nlp -E viz
 
-# Add dashboard/notebook tooling or graph nets when needed
-poetry install --no-root -E viz-app
+# Graph nets when needed
 poetry install --no-root -E gnn
 
 # Install all
@@ -105,7 +93,7 @@ python -m venv .venv
 source .venv/bin/activate
 
 # Install PyTorch with CUDA 13.0
-pip install torch==2.9.1 torchvision==0.24.1 torchaudio==2.9.1 --index-url https://download.pytorch.org/whl/cu130
+pip install torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130
 
 # Install other dependencies as needed
 pip install transformers datasets accelerate
@@ -120,10 +108,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-# If installed [ml]
 import torch
-import pytorch_lightning as pl
 
 # Verify CUDA 13.0 / Blackwell support
 print(f"PyTorch version: {torch.__version__}")
@@ -131,6 +116,9 @@ print(f"CUDA available: {torch.cuda.is_available()}")
 if torch.cuda.is_available():
     print(f"GPU: {torch.cuda.get_device_name(0)}")
     print(f"Compute capability: {torch.cuda.get_device_capability(0)}")
+
+# If installed [training]
+import pytorch_lightning as pl
 
 # If installed [vision]
 import cv2
@@ -145,9 +133,6 @@ from transformers import AutoTokenizer
 # If installed [viz]
 import plotly.express as px
 
-# If installed [viz-app]
-import streamlit as st
-
 # If installed [data]
 import polars as pl
 
@@ -159,21 +144,10 @@ from torch_geometric.nn import GCNConv
 
 The DGX Spark combines ARM64 (aarch64) with CUDA 13.0, which is a relatively new configuration. Some packages may have limited support:
 
-1. **bitsandbytes**: May not have pre-built aarch64 + cu130 wheels. Build from source if needed.
-2. **deepspeed**: ARM64 support may be limited. Check latest releases.
-3. **flash-attention**: Not required - PyTorch's native SDPA with cuDNN 9.13 is faster on Blackwell.
-4. **pyarrow**: May need cmake installed for building on ARM64.
+1. **flash-attention**: Not required - PyTorch's native SDPA with cuDNN 9.13 is faster on Blackwell.
+2. **pyarrow**: May need cmake installed for building on ARM64.
 
-### Workarounds
-
-If you encounter issues with specific packages:
-```bash
-# Skip problematic packages in nlp-train
-poetry install --no-root -E ml -E nlp  # Skip nlp-train
-
-# Or install without bitsandbytes/deepspeed
-pip install trl  # Just TRL without the quantization/distributed packages
-```
+> The previous `nlp-train` extra (TRL / bitsandbytes / DeepSpeed) and `viz-app` extra (Streamlit / Gradio / Jupyter / …) were removed in v0.3.0. Install those packages directly with `pip install ...` if you need them.
 
 ## Testing
 
@@ -185,10 +159,10 @@ From the root directory:
 pytest -v
 
 # Test specific group
-pytest -k "pytorch-cu130-ml"
+pytest -k "pytorch-cu130-training"
 
 # Test specific group import test
-pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu130-ml"
+pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu130-training"
 ```
 
 ## Requirements
@@ -196,45 +170,37 @@ pytest tests/test_imports.py::TestImports::test_all_imports -k "pytorch-cu130-ml
 - Python 3.10, 3.11, or 3.12
 - CUDA 13.0 compatible GPU (Blackwell architecture: GB10, GB100, GB200)
 - NVIDIA driver 560+ with CUDA 13.0 support
-- ~3GB for base, increases with each group (up to ~50GB for all)
+- ~5.5GB for base; up to ~8-9GB for `-E all`
 
 ## Disk Usage Estimates
 
-- **base** (incl. sklearn + matplotlib/seaborn): ~1.5GB
-- **base + ml**: ~15GB
-- **base + ml + vision**: ~20GB
-- **base + ml + vision + nlp**: ~30GB
-- **base + ml + vision + nlp + viz-app**: ~35GB
-- **all**: ~50GB
+- **base** (PyTorch + sklearn + matplotlib/seaborn + pytest): ~5.5GB
+- **base + training**: ~6GB
+- **base + training + vision**: ~6.5GB
+- **base + training + vision + nlp**: ~8GB
+- **all**: ~8-9GB
 
 ## Common Combinations
 
-### Beginner (10GB)
+### Vision development
 ```bash
-poetry install --no-root -E ml -E vision
+poetry install --no-root -E training -E vision -E vision-extra
 ```
 
-### LLM Development (30GB)
+### LLM development
 ```bash
-poetry install --no-root -E ml -E nlp
-# Note: nlp-train group excluded due to potential ARM64 compatibility issues
+poetry install --no-root -E training -E nlp
 ```
 
-### Computer Vision (25GB)
-```bash
-poetry install --no-root -E ml -E vision -E vision-extra
-```
-
-### Full Stack (50GB)
+### Full stack
 ```bash
 poetry install --no-root -E all
-# Note: Some packages in nlp-train may fail on ARM64
 ```
 
 ## Dependency Notes
 
 - **numpy** capped at <2.0.0 due to widespread compatibility issues
-- All PyTorch packages pinned to compatible versions (torch 2.9.1, torchvision 0.24.1, torchaudio 2.9.1)
+- All PyTorch packages pinned to compatible versions (torch 2.10.0, torchvision 0.25.0, torchaudio 2.10.0)
 - CUDA 13.0 required for Blackwell GPUs (sm_120/sm_121)
 - pyarrow bumped to ^14.0.0 for better ARM64 wheel availability
 
@@ -248,7 +214,7 @@ poetry install --no-root -E all
 
 | Stack | CUDA | PyTorch | Target GPUs |
 |-------|------|---------|-------------|
-| pytorch-cu118 | 11.8 | 2.1.x | Ampere, older |
-| pytorch-cu121 | 12.1 | 2.3.x | Ampere, Ada Lovelace |
+| pytorch-cu118 | 11.8 | 2.3.1 | Ampere, older |
+| pytorch-cu121 | 12.1 | 2.3.1 | Ampere, Ada Lovelace |
 | pytorch-cu126 | 12.6 | 2.9.0 | Ampere, Ada, Hopper |
-| **pytorch-cu130** | **13.0** | **2.9.1** | **Blackwell (GB10, etc.)** |
+| **pytorch-cu130** | **13.0** | **2.10.0** | **Blackwell (GB10, etc.)** |
