@@ -10,9 +10,9 @@ Automated testing and deployment workflows for ML Frameworks stacks.
 
 **Matrix Testing:**
 - Python versions: 3.10, 3.11
-- Stacks: pytorch-cu118, pytorch-cu121, pytorch-cu126
-- Groups: base, ml, vision, vision-extra, nlp, nlp-train, viz, data, dev, all
-- Total: 18 test jobs (excludes 'all' on Python 3.10 to save CI time)
+- Stacks: pytorch-cu118, pytorch-cu121, pytorch-cu126, pytorch-cu130
+- Groups: base, training, vision, vision-extra, nlp, viz, data, gnn, all
+- Total: ~68 test jobs (excludes 'all' on Python 3.10 to save CI time)
 
 **What it does:**
 1. Checks out code
@@ -77,7 +77,7 @@ To mimic CI locally:
 pytest -v
 
 # Or test specific group
-pytest -k "pytorch-cu121-ml" -v
+pytest -k "pytorch-cu121-training" -v
 
 # Run linting
 black . --check

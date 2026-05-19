@@ -52,7 +52,7 @@ cd stacks/pytorch-cu121
 poetry run pytest ../../tests -v
 
 # Test specific group
-poetry run pytest ../../tests -k "pytorch-cu121-ml" -v
+poetry run pytest ../../tests -k "pytorch-cu121-training" -v
 
 # Test with coverage
 poetry run pytest ../../tests --cov=tests
@@ -119,7 +119,7 @@ Edit `stacks/pytorch-cu121/pyproject.toml`:
 your-new-package = {version = "^1.0.0", optional = true}
 
 [tool.poetry.extras]
-ml = [
+training = [
     "existing-package",
     "your-new-package",  # Add here
 ]
@@ -140,13 +140,13 @@ package_to_import = {
 
 ```bash
 cd stacks/pytorch-cu121
-poetry install --no-root -E ml
-poetry run pytest ../../tests -k "pytorch-cu121-ml" -v
+poetry install --no-root -E training
+poetry run pytest ../../tests -k "pytorch-cu121-training" -v
 ```
 
 ## PR Review Process
 
-1. **Automated checks** run across the full CI matrix (4 stacks × 2 Python versions × 11 dependency groups, minus a few `all`-on-3.10 excludes)
+1. **Automated checks** run across the full CI matrix (4 stacks × 2 Python versions × 9 dependency groups, minus a few `all`-on-3.10 excludes)
 2. **Code review** by maintainers
 3. **Manual testing** (for risky changes)
 4. **Merge** once approved and all checks pass

@@ -89,7 +89,7 @@ jobs:
 
           Or with extras:
           ```bash
-          pip install "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ml_stack_pytorch-${{ steps.check-tag.outputs.version }}-py3-none-any.whl[ml,vision]"
+          pip install "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/ml_stack_pytorch-${{ steps.check-tag.outputs.version }}-py3-none-any.whl[training,vision]"
           ```
         files: stacks/${{ matrix.stack }}/dist/*
         draft: false
